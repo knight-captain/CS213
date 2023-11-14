@@ -1,0 +1,25 @@
+body {
+    margin: auto;
+    width: 50%;
+}
+
+h1, h3{
+    margin: auto;
+    width: 50%;
+}
+
+.alert{
+    color: red;
+    justify-self: right;
+}
+
+.input{
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* #fillOut{
+    display: flex;
+    flex-direction: column;
+} */

@@ -1,0 +1,225 @@
+<!--This will be assignment #13.-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assign13.css">
+    <script src='assign13_3.php'></script>
+    <script>
+        function loadFiles(){
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function(){
+                if (this.readyState == 4 && this.status == 200){
+                    var files = this.response;
+                    document.getElementById("result_list").innerHTML = files;
+                }
+            };
+            xmlhttp.open("GET", "assign13_3.php", true);
+            xmlhttp.send();
+        }
+
+        function clearForm(){ document.getElementById("info").reset(); }
+
+        function checkValue(field) {
+            let start = document.getElementById(field).value;
+            let alert = field + "Alert";
+
+            //for the duet section
+            if (field == "performance" ) {
+                if (start == "Duet"){
+                    getDuet();
+                    return 0;
+                }else{
+                    document.getElementById("duet").innerHTML = "";
+                }
+            }
+
+            //For the text fields
+            if (field == "first_name" || field == "last_name" || field == "student_id" || field == "room") {
+                if (start == ""){
+                    let result = "Warning: this field must be filled out";
+                    document.getElementById(alert).innerHTML = result;
+                    // document.getElementById(field).focus();
+                    return 1;
+                }else{
+                    document.getElementById(alert).innerHTML = "";
+                }
+            }
+
+            //For the Dropdowns
+            if (field == "performance" || field == "skill" || field == "instrument" || field == "location" || field == "time_slot") {
+                if (start == "fail"){
+                    let result = "Warning: this field must be filled out!";
+                    document.getElementById(alert).innerHTML = result;
+                    // document.getElementById(field).focus();
+                    return 1;
+                }else{
+                    document.getElementById(alert).innerHTML = "";
+                }
+            }
+        }
+
+        function getDuet(){
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function(){
+                if (this.readyState == 4 && this.status == 200){
+                    document.getElementById("duet").innerHTML = this.response;
+                }
+            };
+            xmlhttp.open("GET", "assign13_2.php", true);
+            xmlhttp.send();
+        }
+
+        function checkForm(){
+            let fault = 0;
+            fault += checkValue("performance");
+            fault += checkValue("first_name");
+            fault += checkValue("last_name");
+            fault += checkValue("student_id");
+            if (checkValue("performance")<1){
+                fault += checkValue("first_name_2");
+                fault += checkValue("last_name_2");
+                fault += checkValue("student_id_2");
+            }
+            fault += checkValue("skill");
+            fault += checkValue("instrument");
+            fault += checkValue("location");
+            fault += checkValue("room");
+            fault += checkValue("time_slot");
+            if (fault > 0){
+                
+            } else {
+                // document.getElementById("info").submit();
+                submitForm();
+            }
+        }
+
+        function submitForm(){
+            let form = document.getElementById("info");
+
+            form.onsubmit = function(event) {
+                event.preventDefault();
+
+                var request = new XMLHttpRequest();
+                request.open('POST', 'assign13.php', false);
+
+                var formData = new FormData(document.getElementById('info'));
+                request.send(formData);
+
+                loadFiles();
+            }
+        }
+
+    </script>
+    <title>Piano Stuff</title>
+</head>
+
+<body onload="loadFiles();">
+<!-- You must do form validation on the client requiring all fields to be filled out before allowing the student to be registered. -->
+<!-- Each time the register button is pressed, the form information must be displayed in a display portion of the same web page without reloading the page. The data in the display area must also be written to a file on disk in the data directory using a PHP program. -->
+<div>
+<h1>Register for a Performance</h1>
+    <form id="info" > <!-- target="frame" action="assign13.php" method="post" onsubmit="return checkForm();" -->
+<!-- The form must contain the following fields (use a variety of input types): -->
+<!-- Note: If any of the following inputs is a checkbox; please append "_0", "_1", etc. to the names. -->
+<!-- Input Fields -->
+    <!-- Performance Type: (solo, duet, concerto). Note: the duet performance type requires the listing of two students. Give this input the name performance. -->
+    <h3>Performer's Information</h3>
+    <div class="input">
+        Performance Type:
+        <select name="performance" id="performance" onfocusout="checkValue('performance')" required>
+            <option value="fail" selected="selected">Performance</option>
+            <option value="Solo">Solo</option>
+            <option value="Duet">Duet</option>
+            <option value="Concerto">Concerto</option>
+        </select>
+    </div><span class="alert" id="performanceAlert"></span>
+    <!-- First Name. Give this input the name first_name. -->
+    <div class="input">
+        Given/First Name: <span><input type="text" name="first_name" id="first_name" onfocusout="checkValue('first_name')" placeholder="" size="5"> </span>
+    </div><span class="alert" id="first_nameAlert"></span>
+    <!-- Last Name. Give this input the name last_name. -->
+    <div class="input">
+        Surname/Last Name: <span><input type="text" name="last_name" id="last_name" onfocusout="checkValue('last_name')" placeholder="" size="5"> </span>
+    </div><span class="alert" id="last_nameAlert"></span>
+    <!-- Student ID. Give this input the name student_id. -->
+    <div class="input">
+        Student ID: <span><input type="text" name="student_id" id="student_id" onfocusout="checkValue('student_id')" placeholder="" size="5"> </span>
+    </div><span class="alert" id="student_idAlert"></span>
+    <div id="duet"></div>
+    <!-- Skill Level (valid skill levels: beginner, intermediate, pre-advanced, advanced). Give this input the name skill. -->
+    <div  class="input">
+        Skill Level: 
+            <select name="skill" id="skill" onfocusout="checkValue('skill')" required>
+            <option value="fail" selected="selected">Skill</option>
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Pre-advanced">Pre-advanced</option>
+            <option value="Advanced">Advanced</option>
+        </select>
+    </div><span class="alert" id="skillAlert"></span>
+    <!-- Instrument (valid instruments: piano, voice, string, organ, other). Give this input the name instrument. -->
+    <div  class="input">
+        Instument: 
+        <select name="instrument" id="instrument" onfocusout="checkValue('instrument')" required>
+            <option value="fail" selected="selected">Instument</option>
+            <option value="Piano">Piano</option>
+            <option value="Voice">Voice</option>
+            <option value="String">String</option>
+            <option value="Organ">Organ</option>
+            <option value="Other">Other</option>
+        </select>
+    </div><span class="alert" id="instrumentAlert"></span>
+    <!-- Location // On campus building where the room is located (Snow, Austin, etc.). Give this input the name location. -->
+    <h3>Performance Location</h3>
+    <div  class="input">
+        Performance Building
+        <select name="location" id="location" onfocusout="checkValue('location')" required>
+            <option value="fail" selected="selected">Building</option>
+            <option value="Snow">Snow Building</option>
+            <option value="Austin">Austin Building</option>
+            <option value="Pikachu">Pikachu Building</option>
+            <option value="Narnia">Narnia Building</option>
+        </select>
+    </div><span class="alert" id="locationAlert"></span>
+    <!-- Room# // room number the student will be judged in. Give this input the name room. -->
+    <div  class="input">
+        Room Number: <span><input type="text" name="room" id="room" onfocusout="checkValue('room')" placeholder="" size="5"> </span>
+    </div><span class="alert" id="roomAlert"></span>
+    <!-- Time Slot // time slot the student is registering for. (i.e. 8:00 am, 9:45am). Give this input the name time_slot. -->
+    <div  class="input">
+        Time Slot: 
+        <select name="time_slot" id="time_slot" onfocusout="checkValue('time_slot')" required>
+            <option value="fail" selected="selected">Slot</option>
+            <option value="800">8:00am</option>
+            <option value="815">8:15am</option>
+            <option value="830">8:30am</option>
+            <option value="845">8:45am</option>
+            <option value="900">9:00am</option>
+            <option value="915">9:15am</option>
+            <option value="930">9:30am</option>
+            <option value="945">9:45am</option>
+            <option value="1000">10:00am</option>
+            <option value="1015">10:15am</option>
+            <option value="1030">10:30am</option>
+            <option value="1045">10:45am</option>
+        </select>
+    </div><span class="alert" id="time_slotAlert"></span>
+    <!-- Two Buttons: -->
+    <!-- Register student. Give this input the name register.  -->
+    <input type="submit" id="enter" value="Enter Info" onclick="checkForm();">
+    <!-- Clear form. Give this input the name clear. -->
+    <input type="button" id="clear" value="Clear Form" onclick="clearForm();">
+</form>
+</div>
+<div id="result_list" >
+    <!-- <iframe name="frame"></iframe> -->
+<!-- Additional Display Requirement -->
+<!-- A display area in the document will list all students that have been registered. -->
+<!-- This list must be updated each time a student is registered (by pressing the register button). -->
+<!-- The list of registered students and all of their registration form data must also be written to a file in the data directory on the server and retrieved each time the form is loaded, thus maintaining the state between sessions. Registering additional students will continue to add to the list of previously registered students and their registration information. -->
+</div>
+
+</body>
+</html>
